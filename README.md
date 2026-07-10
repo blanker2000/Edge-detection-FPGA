@@ -1,663 +1,290 @@
-# SKILL LAB PRATICAL HACKATHON
+# 🚀 Real-Time FPGA Accelerated Edge Detection using PYNQ-Z2
 
-## Final Project README
+## Overview
 
-> **Project Weight:** 100%  
-> **Team Size:** 4/3 students  
-> **Project Duration:** 16 hours  
-> **Total Time Available:** 32 effort-hours per team  
-> **Project Type:** Playful, interactive, technology-based experience
+This project implements a **real-time FPGA-accelerated edge detection pipeline** on the **PYNQ-Z2 FPGA Development Board** using a custom AXI4-Stream hardware accelerator.
 
----
+Live video is captured from a laptop webcam and streamed over Ethernet using **ZeroMQ**. The PYNQ-Z2 receives the image stream through Python running on the ARM Processing System (PS), transfers the image to the Programmable Logic (PL) using **AXI DMA**, performs edge detection in hardware, and returns the processed image to Jupyter Notebook for visualization. The design can also be extended to display the processed frames through HDMI.
 
-# Before you begin
-
-## Fork and rename this repository
-
-After forking this repository, rename it using the format:
-
-`SKILLLAB_PROR-2026-TeamName`
-
-### Example
-
-`SKILLLAB_PROR-2026-AuroWizards`
-
-Do not keep the default repository name.
+This project demonstrates a complete **hardware/software co-design workflow** using Vivado, Verilog, AXI4-Stream, AXI DMA, Python, and PYNQ.
 
 ---
 
-# How to use this README
+# Features
 
-This file is your team’s **working project document**.
-
-You must keep updating it throughout the build period.  
-By the final review, this README should clearly show:
-
-- your idea,
-- your planning,
-- your design decisions,
-- your technical process,
-- your build progress,
-- your testing,
-- your failures and changes,
-- your final outcome.
-
-## Rules
-
-- Fill every section.
-- Do not delete headings.
-- If something does not apply, write `Not applicable` and explain why.
-- Add images, screenshots, sketches, links, and videos wherever useful.
-- Update task status and weekly logs regularly.
-- Use this file as evidence of process, not only as a final report.
+- ⚡ FPGA Hardware Acceleration
+- 📷 Live Camera Streaming
+- 🌐 Ethernet Communication using ZeroMQ
+- 🔄 AXI DMA Memory Transfers
+- 🧠 Custom AXI4-Stream RTL Accelerator
+- 📺 Jupyter Notebook Visualization
+- 🎥 HDMI Output Ready
+- 🛠 Vivado Block Design
+- 🔌 PYNQ-Z2 Platform
 
 ---
 
-# 1. Team Identity
+# System Architecture
 
-## 1.1 Group Name
-
-`Sabbath`
-
-## 1.2 Team Members
-
-| Name | Primary Role | Secondary Role | Strengths Brought to the Project |
-|---|---|---|---|
-| `Shlok Shety` | `FPGA Hardware Integration` | `Image Processing` | `System integration, FPGA setup, hardware coordination, technical communication` |
-| `Rahul Vidwans` | `Image Processing Pipeline` | `Documentation / System Design` | `OpenCV preprocessing, debugging, flowchart and architecture design` |
-| `Samruddhi Shimpi` | `Algorithm Development` | `Project Documentation` | `Edge detection workflow design, documentation structuring, implementation planning` |
-| `Atharva Chaudhari` | `GitHub Management` | `Algorithm Assistance` | `README organization, project formatting, and algorithm workflow support` |
-
-## 1.3 Project Title
-
-`Realtime edge detection using FPGA`
-
-
-<img width="1600" height="1131" alt="image" src="https://github.com/user-attachments/assets/c64bfbd4-b3b7-43d9-83ad-c203a5aa11bc" />
-
-## 1.4 One-Line Pitch
-
-`A real-time FPGA-accelerated Canny edge detection system using the PYNQ-Z2 board that processes live camera input and generates high-speed edge-enhanced output using DSP-based image processing.`
-
-## 1.5 Expanded Project Idea
-
-**Response:**  
-
-`This project focuses on developing a real-time edge detection system using the PYNQ-Z2 FPGA platform to demonstrate high-speed hardware-accelerated image processing. The system captures live video input from a webcam and preprocesses the frames using Python and OpenCV inside a Jupyter Notebook environment. The grayscale image is then transferred to a custom FPGA IP core through AXI DMA, where edge detection is performed in real time using Sobel-based gradient computation and DSP48-accelerated convolution.`
-
-`Unlike traditional CPU-based image processing, where pixels are processed sequentially, the FPGA processes multiple operations simultaneously using pipelining, streaming architectures, and dedicated DSP hardware blocks. The system uses line buffers, sliding convolution windows, Gaussian filtering, gradient magnitude approximation, and dual-threshold edge extraction to generate a continuous real-time edge-enhanced video output with very low latency.`
-
-`By combining FPGA hardware acceleration with computer vision techniques, the project demonstrates how hardware/software co-design can improve image processing performance for real-time video processing, embedded systems, smart cameras, and basic computer vision applications.`
+```text
+Laptop Webcam
+      │
+      ▼
+ZeroMQ Ethernet Stream
+      │
+      ▼
+ARM Processing System (Python)
+      │
+      ▼
+DDR Memory
+      │
+      ▼
+AXI DMA (MM2S)
+      │
+      ▼
+Custom FPGA Edge Detection IP
+      │
+      ▼
+AXI DMA (S2MM)
+      │
+      ▼
+DDR Memory
+      │
+      ▼
+Jupyter Notebook
+      │
+      ▼
+(Optional HDMI Output)
+```
 
 ---
 
-# 2. Inspiration
+# FPGA Processing Pipeline
 
-## 2.1 References
-
-| Source Type | Title / Link | What Inspired You |
-|---|---|---|
-| `[Video]` | `https://youtu.be/Ut5s4rImEhI?si=zgon5YOzGiYfu-Zj` | `Real-time image scanning and hardware-accelerated computer vision systems` |
-| `[Research]` | `Canny Edge Detection Algorithm` | `Understanding Gaussian filtering, Sobel-based gradient computation, and threshold-based edge extraction` |
-| `[Documentation]` | `PYNQ-Z2 and Vivado AXI DMA Tutorials` | `Learning FPGA-based image processing, AXI streaming, and hardware/software co-design` |
-| `[Library]` | `OpenCV Documentation` | `Image preprocessing, grayscale conversion, and webcam frame handling` |
-
-**Response:**
-
-`This project combines a Canny-inspired edge detection pipeline with Canny-based gradient computation implemented entirely on FPGA using pure Verilog RTL and DSP48 hardware acceleration on the PYNQ-Z2 platform. The system uses AXI DMA, streaming architectures, pipelined processing, and dedicated DSP hardware blocks to achieve low-latency real-time edge detection from live webcam input, creating an optimized FPGA-based image processing pipeline without relying on high-level synthesis tools.`
-
----
-
-# 3. Project Intent
-
-## 3.1 User Journey
-
-**Response:**
-
-`The user starts the system using a Jupyter Notebook running on the PYNQ-Z2 board and connects a webcam for live video input. The webcam continuously captures video frames, and Python with OpenCV converts them into grayscale images before sending them to the FPGA through AXI DMA. Inside the FPGA, the custom Verilog edge detection IP processes the frames using Canny-inspired edge detection and DSP48-accelerated computation. The user can then observe the real-time edge-detected video output displayed live on the screen, where object boundaries and edges are highlighted continuously.`
-
----
-
-# 4. Definition of Success
-
-## 4.1 Definition of “Usable”
-
-`In this project, the system is considered usable when the live image feed is captured and processed continuously without interruption, the FPGA correctly performs edge detection on incoming frames, and the output displays clear and stable edges in real time. Additionally, the data transfer through AXI DMA must operate reliably without crashes or delays, ensuring smooth and consistent overall performance.`
+```text
+Input Pixels
+      │
+      ▼
+Line Buffers
+      │
+      ▼
+3×3 Sliding Window
+      │
+      ▼
+Gaussian Filtering
+      │
+      ▼
+Sobel Gradient Computation
+      │
+      ▼
+Gradient Magnitude
+      │
+      ▼
+Thresholding
+      │
+      ▼
+Output Edge Image
+```
 
 ---
 
-## 4.2 Minimum Usable Version
+# Vivado Block Design
 
-**Response:**
-
-`The smallest version of this project that still delivers the core experience consists of a basic real-time pipeline where a laptop webcam captures live video, the image is converted to grayscale using Python and OpenCV, and the frames are transferred to the FPGA through AXI DMA. The FPGA then performs Canny-inspired edge detection using the custom Verilog RTL IP and returns the processed output, which is displayed on the screen in real time.`
-
----
-
-## 4.3 Stretch Features
-
-`- Complete hardware-based Canny edge detection implementation`
-
-`- Improved Gaussian blur and noise reduction techniques`
-
-`- Thinner edge generation using non-maximum suppression`
-
-`- Adjustable threshold control for edge sensitivity`
-
-`- Support for multiple edge detection filters`
-
-`- Higher-resolution image processing`
-
-`- Hardware-based grayscale conversion`
-
-`- User interface for selecting modes and tuning parameters`
+<p align="center">
+<img src="docs/Vivado_Block_Design.png" width="900">
+</p>
 
 ---
 
-# 5. System Overview
+# Hardware Used
 
-## 5.1 Project Type
-
-Check all that apply.
-
-- [x] Electronics-based
-
-- [ ] Mechanical
-
-- [ ] Sensor-based
-
-- [x] App-connected
-
-- [ ] Motorized
-
-- [ ] Sound-based
-
-- [x] Light-based
-
-- [ ] Screen/UI-based
-
-- [ ] Fabricated structure
-
-- [ ] Game logic based
-
-- [ ] Installation
-
-- [ ] Other:
-
-## 5.2 High-Level System Description
-
-Explain how the system works in simple terms.
-
-Include:
-
-- input,
-- processing,
-- output,
-- physical structure,
-- app interaction if any.
-
-**Response:**  
-
-`The system takes live video input from a webcam connected to a laptop or PC. Python and OpenCV running inside Jupyter Notebook preprocess the incoming video frames by converting them into grayscale images and transferring them to the PYNQ-Z2 FPGA through AXI DMA.`
-
-`Inside the FPGA, a custom Verilog edge detection module performs Gaussian filtering, Canny-based edge detection using Sobel-based gradient computation, and threshold-based processing using DSP48 hardware acceleration. The processed edge-detected frames are then sent back and displayed live on the screen in real time.`
-
-`The physical setup includes a webcam, the PYNQ-Z2 FPGA board, a laptop or PC running the Jupyter environment, and a monitor for displaying the output. Jupyter Notebook acts as the main interface for controlling the FPGA overlay and managing the real-time image processing pipeline.`
-
-
-## 5.3 Input / Output Map
-
-| System Part | Type | What It Does |
-| ------------------------- | --------:| ------------------------------------- |
-| `Laptop Webcam` | `Input` | `Captures live video frames` |
-| `Python/OpenCV` | `Processing` | `Converts frames into grayscale and preprocesses the image` |
-| `AXI DMA` | `Data Transfer` | `Transfers image frames between the processor and FPGA` |
-| `FPGA Edge Detection IP` | `Processing` | `Performs edge detection operations` |
-| `DSP48 Blocks` | `Hardware Acceleration` | `Accelerates convolution and arithmetic operations` |
-| `Jupyter Notebook` | `Control Interface` | `Controls the FPGA overlay and processing pipeline` |
-| `Laptop Display` | `Output` | `Displays the real-time edge-detected video output` |
-
-
-# 6. System Design, Sketches and Visual Planning 
-
-## 6.1 Concept Architecture/sketch/schematic
-
-## System Block Design 
-
-![System Block Design](images/system_block_design.jpeg)
-
-
-
-## 6.2 Labeled Build Sketch/architecture/flow diagram/algorithm
-
-
-## FPGA Edge Detection Architecture
-
-![FPGA Edge Detection Architecture](images/fpga_edge_detection_architecture.png)
-
-## 6.3 Approximate Dimensions
-
-NA
+- Xilinx PYNQ-Z2 FPGA Development Board
+- Zynq-7000 SoC
+- Laptop Webcam
+- Ethernet Connection
+- HDMI Monitor (Optional)
 
 ---
 
-# 7. Electronics Planning
+# Software Used
 
-## 7.1 Electronics Used
-
-| Component                 | Quantity | Purpose                               |
-| ------------------------- | --------:| ------------------------------------- |
-| `PYNQ-Z2 FPGA Board `       | `1`      | `[Main controller]`                   |
-| `Laptop `    | `1`      | `Handles webcam input and displays the processed output`|
-
-
-## 7.2 Wiring Plan
-
-Describe the main electrical connections.
-
-NA
-
-## 7.3 Circuit Diagram/architecture diagram
-
-NA
-
-# 7.4. Power Plan
-
-| Question | Response |
-|---|---|
-| Voltage required | `5V DC for the PYNQ-Z2 board` |                                                        
+- Vivado
+- Verilog HDL
+- Python
+- PYNQ Framework
+- OpenCV
+- NumPy
+- ZeroMQ
+- Matplotlib
+- Jupyter Notebook
 
 ---
 
-# 8. Software Planning
+# Repository Structure
 
-## 8.1 Software Tools
-
-| Tool / Platform                | Purpose                                        |
-| ------------------------------ | ---------------------------------------------- |
-| `Vivado`                | `used to design, implement, and generate the FPGA hardware (edge detection IP and system architecture).`                                |
-| `Jupyter notebook`       | `used to control the system, capture and preprocess images, and communicate with the FPGA using DMA.` |
-
-
-## 8.2 Software Logic/Algorithm
-
-Describe what the code must do.
-
-Include:
-
-- startup behavior,
-- input handling,
-- sensor reading,
-- decision logic,
-- output behavior,
-- communication logic,
-- reset behavior.
-  
-**Response:**
-
-`- Startup behavior:
-The system initializes the webcam, AXI DMA engine, FPGA overlay, and Jupyter Notebook environment.`
-
-`- Input handling:
-Live video frames are continuously captured from the PC webcam using Python and OpenCV.`
-
-`- Sensor reading:
-The webcam continuously provides RGB image frames for real-time processing.`
-
-`- Decision logic:
-Python preprocesses the incoming frames using grayscale conversion, Gaussian blur, and image enhancement before transferring them to the FPGA through AXI DMA. The FPGA performs Sobel-based edge detection and threshold-based processing.`
-
-`- Output behavior:
-The FPGA returns the processed edge-detected output, which is postprocessed and displayed live on the screen.`
-
-`- Communication logic:
-AXI DMA is used for high-speed transfer between the processor and FPGA programmable logic.`
-
-`- Reset behavior:
-If DMA transfer or frame capture fails, the processing pipeline safely restarts to continue real-time operation.`
-     
-## 8.3 Code Flowchart
-
-![Code Flowchart](images/Code_Algorithm.png)
-
-
-
-
-# 9. Bill of Materials
-
-## 9.1 Full BOM
-
-| Item                             | Quantity | In Kit? | Need to Buy? | Estimated Cost | Material / Spec               | Why This Choice?          |
-| -------------------------------- | --------:| ------- | ------------ | --------------:| ----------------------------- | ------------------------- |
-| `PYNQ-Z2 board`                        | `1`      | `Yes`   | `No`         | `₹25K`            | `xc7z020clg400-1`                | `Due to inbuilt access of Jupyter notebook` |
-
-
-## 9.2 Material Justification
-
-**Response:**
-
-`The PYNQ-Z2 board (XC7Z020-1CLG400C) was selected as the main platform because it combines an FPGA with an embedded ARM processor, allowing both hardware acceleration and software control within a single system. One of the key reasons for choosing this board is its built-in support for Jupyter Notebook, which simplifies development by enabling Python-based control, real-time image preprocessing using OpenCV, and easy interaction with the FPGA through AXI DMA.`
-
-`This combination makes the development process faster and more accessible compared to traditional FPGA workflows while still allowing low-level hardware implementation using Verilog RTL in Vivado. The board also supports DSP48 hardware blocks and AXI streaming interfaces, making it well suited for real-time edge detection and FPGA-based image processing applications.`
-
-`A laptop webcam was used for live video input because it provides a simple and accessible real-time image source for testing and demonstration.`
-
-
-## 9.3 Items You chose
-
-| Item                 | Why Needed               | Purchase Link | Latest Safe Date to Procure | Status       |
-| -------------------- | ------------------------ | ------------- | --------------------------- | ------------ |
-| `PYNQ board (xc7z020clg400-1)` | `it enables real-time FPGA processing with easy control through built-in Jupyter Notebook.`   | `none`     | `-`                | `[Received]` |
-
-
-## 9.4 Budget Summary
-
-| Budget Item | Estimated Cost |
-|---|---:|
-| Electronics | `₹25,000` |
-| Mechanical parts | `N/A` |
-| Fabrication materials | `N/A` |
-| Purchased extras | `₹0` |
-| Contingency | `₹0` |
-| **Total** | `₹25,000` |
-
-
-**Response:**  
-
-`The project mainly uses the PYNQ-Z2 FPGA board and existing system components such as a laptop and webcam, so additional project cost was minimal. Since most required hardware was already available, no major budget reduction or simplification was necessary.`
+```text
+├── Vivado_Project
+│   ├── RTL
+│   ├── Block_Design
+│   ├── design.bit
+│   └── design.hwh
+│
+├── Python
+│   ├── laptop_camera_stream.py
+│   ├── receiver.py
+│   └── utilities.py
+│
+├── Jupyter
+│   ├── edge_detection.ipynb
+│   └── demo.ipynb
+│
+├── docs
+│   ├── Vivado_Block_Design.png
+│   ├── Architecture.png
+│   ├── Pipeline.png
+│   └── Images
+│
+└── README.md
+```
 
 ---
 
-# 10. Planning the Work
+# Project Workflow
 
-## 10.1 Team Working Agreement
-
-**Response:**  
-
-`Tasks were divided based on hardware setup, FPGA development, image processing, algorithm design, testing, and documentation responsibilities. Major technical decisions were discussed together after verifying feasibility and debugging results. Progress was checked continuously during implementation and integration sessions. If a task was delayed, team members collaborated to resolve issues and maintain workflow continuity. Documentation and GitHub updates were maintained throughout development to ensure proper tracking of architecture, testing, and implementation details.`
-
----
-
-## 10.2 Task Breakdown
-
-| Task ID | Task | Estimated Hours | Deadline | Dependency | Status |
-|---|---|---:|---|---|---|
-| T1 | Finalizing Concept | 0.5 | 30 April 2026 | None | Done |
-| T2 | Webcam Scene Setup | 0.5 | 30 April 2026 | T1 | Done |
-| T3 | Webcam Capture Code | 0.5 | 30 April 2026 | T2 | Done |
-| T4 | Python/OpenCV Pipeline Code | 1 | 30 April 2026 | T3 | Done |
-| T5 | FPGA Verilog RTL Code | 1.5 | 30 April 2026 | T4 | Done |
-| T6 | AXI DMA Integration | 0.5 | 30 April 2026 | T5 | Done |
-| T7 | Debugging and Testing | 0.5 | 30 April 2026 | T6 | Done |
-| T8 | Documentation | 0.5 | 1 May 2026 | T7 | Ongoing |
+1. Capture live frames from the laptop webcam.
+2. Compress frames into JPEG format.
+3. Stream frames over Ethernet using ZeroMQ.
+4. Receive image stream on the PYNQ-Z2.
+5. Decode JPEG frames into OpenCV images.
+6. Convert images to grayscale.
+7. Transfer image to FPGA using AXI DMA.
+8. Perform edge detection using the custom RTL accelerator.
+9. Receive processed image from FPGA.
+10. Display the processed output in Jupyter Notebook or HDMI.
 
 ---
 
-## 10.3 Responsibility Split
+# AXI DMA Data Flow
 
-| Area | Main Owner | Support Owner |
-|---|---|---|
-| Planning | `All Members` | `-` |
-| FPGA Development | `Shlok Shety` | `Samruddhi Shimpi` |
-| Image Processing | `Rahul Vidwans` | `Shlok Shety` |
-| Algorithm Development | `Samruddhi Shimpi` | `Atharva Chaudhari` |
-| Testing and Debugging | `Shlok Shetty` | `Rahul Vidwans` |
-| Documentation and GitHub | `Atharva Chaudhari` | `Samruddhi Shimpi` |
-
----
-
-# 11 Hour Milestones
-
-## 11.1 8-hour Plan (Tentative)
-
-### Bi Hour 1 — Plan and De-risk
-
-Expected outcomes:
-
-- [x] Idea finalized
-- [x] Core interaction decided
-- [x] Sketches made
-- [x] BOM completed
-- [x] Purchase needs identified
-- [ ] Key uncertainty identified
-- [x] Basic feasibility tested
-
-### Bi Hour 2 — Build Subsystems
-
-Expected outcomes:
-
-- [x] Electronics tests completed
-- [ ] CAD / structure planning completed
-- [ ] App UI started if needed
-- [ ] Mechanical concept tested
-- [x] Main subsystems partially working
-
-### Bi Hour 3 — Integrate
-
-Expected outcomes:
-
-- [x] Physical body built
-- [x] Electronics integrated
-- [x] Code connected to hardware
-- [ ] App connected if required
-- [x] First playable version exists
-
-### Bi Hour 4 — Refine and Finish
-
-Expected outcomes:
-
-- [x] Technical bugs reduced
-- [x] Playtesting completed
-- [x] Improvements made
-- [x] Documentation completed
-- [x] Final build ready
+```text
+DDR Memory
+      │
+      ▼
+MM2S Channel
+      │
+      ▼
+AXI4-Stream
+      │
+      ▼
+Edge Detection IP
+      │
+      ▼
+AXI4-Stream
+      │
+      ▼
+S2MM Channel
+      │
+      ▼
+DDR Memory
+```
 
 ---
 
-## 12.2 Update Log
+# FPGA Accelerator
 
-| Days | Planned Goal | What Actually Happened | What Changed | Next Steps |
-|---|---|---|---|---|
-| 30 April 2026 | Finalize concept | Selected FPGA edge detection workflow | Shifted to Sobel-based pipeline | Start webcam setup |
-| 30 April 2026 | Develop preprocessing pipeline | Implemented webcam capture and grayscale conversion | Added image preprocessing | Integrate FPGA processing |
-| 30 April 2026 | Develop FPGA IP | Implemented Verilog edge detection module | Optimized DSP48 processing | Test DMA transfers |
-| 30 April 2026 | Debug and testing | Achieved real-time edge detection output | Improved edge clarity | Complete documentation |
+The accelerator is implemented as a custom **AXI4-Stream RTL IP**.
 
----
+Current Processing Stages:
 
-# 13. Risks and Unknowns
+- Line Buffer Generation
+- Sliding Window Generator
+- Gaussian Filtering
+- Sobel Gradient Computation
+- Gradient Magnitude Approximation
+- Thresholding
 
-## 13.1 Risk Register
-
-| Risk | Type | Likelihood | Impact | Mitigation Plan | Owner |
-|---|---|---|---|---|---|
-| AXI DMA transfer failure or frame delay | `Technical` | `Medium` | `High` | Verify DMA configuration, reset buffers properly, and optimize data transfer pipeline | `Both` |
-| Noisy or unclear edge output | `Technical` | `Medium` | `Medium` | Improve preprocessing, Gaussian filtering, and threshold tuning | `Both` |
+The streaming architecture enables continuous pixel processing without storing complete image frames inside the FPGA fabric.
 
 ---
 
-## 13.2 Biggest Unknown Right Now
+# Results
 
-**Response:**  
+## Original Frame
 
-`The biggest uncertainty in the project is maintaining stable real-time performance while continuously transferring and processing live video frames through AXI DMA without latency or frame drops.`
-
----
-
-# 14. Testing
-
-## 14.1 Technical Testing Plan
-
-| What Needs Testing | How You Will Test It | Success Condition |
-|---|---|---|
-| Webcam frame capture | Check live webcam input through Python/OpenCV | Frames are captured continuously without interruption |
-| AXI DMA transfer | Transfer grayscale frames between PS and FPGA | Frames transfer successfully without data corruption |
-| FPGA edge detection IP | Process live frames through the Verilog RTL module | Correct edge-detected output is generated |
-| DSP48-based processing | Verify convolution and Sobel operations in Vivado | DSP operations function correctly during processing |
-| Real-time processing | Run continuous live video pipeline | Output displays smoothly with low latency |
+<p align="center">
+<img src="docs/Images/original.png" width="500">
+</p>
 
 ---
 
-## 14.2 Testing and Debugging Log
+## FPGA Output
 
-| Date | Problem Found | Type | What You Tried | Result | Next Action |
-|---|---|---|---|---|---|
-| `30 April 2026` | `DMA transfer was not returning correct frames` | `Technical` | `Checked AXI DMA configuration and buffer allocation` | `Worked` | `Optimize transfer stability` |
-| `30 April 2026` | `Edge output contained noise` | `Technical` | `Added Gaussian blur and postprocessing filters` | `Improved output quality` | `Tune threshold values further` |
-| `30 April 2026` | `Frame delay during live processing` | `Technical` | `Optimized streaming pipeline and preprocessing` | `Reduced latency` | `Improve real-time performance` |
+<p align="center">
+<img src="docs/Images/output.png" width="500">
+</p>
 
 ---
 
-## 14.3 Playtesting Notes
+# Future Improvements
 
-NA
-
----
-
-# 15. Build Documentation
-
-## 15.1 Fabrication Process (if any)
-
-Describe how the project was physically made.
-
-Include:
-
-- cutting,
-- 3D printing,
-- assembly,
-- fastening,
-- wiring,
-- finishing,
-- revisions.
-
-**Response:**  
-
-NA
+- Full Canny Edge Detector
+- Non-Maximum Suppression (NMS)
+- Hysteresis Thresholding
+- Direct FPGA-to-HDMI Video Pipeline
+- AXI Video DMA Streaming
+- Multi-resolution Support
+- Higher Frame Rates
+- Hardware Optimization using DSP Slices
+- HLS Implementation Comparison
 
 ---
 
-# 16. Build Photos
+# Applications
 
-## Canny Edge Detection Test Output
-
-![Canny Test Output](images/canny_test_output.jpeg)
-
----
-
-## Real Time Canny Edge Detection Output
-
-[▶ Live Real-Time FPGA Output](images/Live_test_output.mp4)
+- Autonomous Robots
+- UAV Vision Systems
+- Embedded Computer Vision
+- Industrial Inspection
+- Smart Surveillance
+- Medical Image Processing
+- Edge AI Systems
 
 ---
 
-# 17. Final Outcome
+# Skills Demonstrated
 
-## 17.1 Final Description
-
-**Response:**  
-
-`The final version of the project is a real-time FPGA-based edge detection system implemented on the PYNQ-Z2 platform using Python/OpenCV preprocessing and a custom Verilog RTL accelerator. Live webcam frames are converted into grayscale images and transferred to the FPGA through AXI DMA, where Gaussian filtering and Canny-based edge detection using Sobel-based gradient computation are performed using DSP48 hardware blocks and streaming FPGA architecture. The processed edge-detected output is then displayed live with low latency, demonstrating real-time hardware-accelerated image processing using FPGA hardware/software co-design.`
-
----
-
-## 17.2 What Works Well
-
-**Response:**  
-
-`The project successfully performs FPGA-based edge detection on live webcam input using AXI DMA communication and DSP48-accelerated Sobel processing. The custom Verilog RTL pipeline correctly performs Gaussian filtering, gradient computation, and threshold-based edge extraction in real time. The integration between Python/OpenCV preprocessing and FPGA hardware processing also worked reliably throughout testing and demonstration.`
+- FPGA Design
+- RTL Design (Verilog)
+- Vivado Block Design
+- AXI4-Stream Protocol
+- AXI DMA
+- Embedded Linux
+- Python Programming
+- Computer Vision
+- Image Processing
+- Hardware/Software Co-Design
+- Real-Time Systems
 
 ---
 
-## 17.3 What Still Needs Improvement
+# Author
 
-**Response:**  
+**Shlok Shetty**
 
-`The Gaussian blur stage still requires optimization or reduction to preserve sharper edge details in the final output. The system also experiences slight processing delay during continuous real-time operation, which can be improved with further pipeline optimization.`
+Electronics & Telecommunication Engineering
 
----
+Areas of Interest
 
-## 17.4 What Changed From the Original Plan
-
-**Response:**  
-
-`The original plan was to display the processed FPGA output on a separate monitor using HDMI output directly from the system. However, due to time constraints and the additional time required for debugging, the project was modified to display the real-time edge-detected output directly on the laptop screen using the current software-based display pipeline.`
-
----
-
-# 18. Reflection
-
-## 18.1 Team Reflection
-
-What did your team do well?  
-What slowed you down?  
-How well did you manage time, tasks, and responsibilities?
-
-**Response:**  
-
+- FPGA Design
+- ASIC Design
+- RISC-V SoC Design
+- Computer Vision
+- Embedded Systems
+- UAV Flight Computers
+- Hardware Accelerators
 
 ---
 
-## 18.2 Technical Reflection
+# License
 
-What did you learn about:
-
-- electronics,
-- coding,
-- mechanisms,
-- fabrication,
-- integration?
-
-**Response:**  
-
-`The project provided practical experience with FPGA-based image processing, AXI DMA communication, Verilog RTL development, DSP48 hardware acceleration, and Python/OpenCV integration. The team also learned how hardware/software co-design improves real-time processing performance.`
-
----
-
-## 18.3 Design Reflection
-
-What did you learn about:
-
-- designing,
-- delight,
-- clarity,
-- physical interaction,
-- understanding,
-- iteration?
-
-**Response:**  
-
-`The project highlighted the importance of simplifying FPGA system architecture, optimizing real-time image processing pipelines, and continuously refining Canny-based edge detection quality through testing and iteration. The team also learned about the working principles of the Canny edge detection algorithm and its implementation on FPGA hardware.`
-
----
-
-## 18.4 If You Had One More Hour
-
-What would you improve next?
-
-**Response:**  
-
-`Further optimize the Gaussian blur stage for sharper and faster edge detection output.`
-
----
-
-# 19. Final Submission Checklist
-
-Before submission, confirm that:
-
-- [x] Team details are complete
-- [x] Project description is complete
-- [x] Inspiration sources are included
-- [x] Sketches are added
-- [x] BOM is complete
-- [x] Purchase list is complete
-- [x] Budget summary is complete
-- [x] Mechanical planning is documented if applicable
-- [ ] App planning is documented if applicable
-- [x] Code flowchart is added
-- [x] Task breakdown is complete
-- [x] Weekly logs are updated
-- [x] Risk register is complete
-- [x] Testing log is updated
-- [x] Playtesting notes are included
-- [x] Build photos are included
-- [x] Final reflection is written
+This project is released under the MIT License.
