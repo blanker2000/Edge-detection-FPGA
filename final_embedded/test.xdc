@@ -1,0 +1,6 @@
+set_property IOSTANDARD TMDS_33 [get_ports hdmi_tx_clk_p]
+set_property IOSTANDARD LVCMOS33 [get_ports sys_clock]
+set_property PACKAGE_PIN L16 [get_ports hdmi_tx_clk_p]
+set_property PACKAGE_PIN J18 [get_ports {hdmi_tx_d_p[2]}]
+set_property PACKAGE_PIN K19 [get_ports {hdmi_tx_d_p[1]}]
+set_property PACKAGE_PIN K17 [get_ports {hdmi_tx_d_p[0]}]
